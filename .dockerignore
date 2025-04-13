@@ -1,0 +1,15 @@
+node_modules
+App/backend/.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+App/build
+App/dist
+*.egg-info
+.env
+.git
+.gitignore
+README.md
+docker-compose.yml

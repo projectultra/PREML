@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./App/backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./App/backend:/app
+    environment:
+      - FLASK_ENV=development
+    networks:
+      - hscmap-network
+  frontend:
+    build:
+      context: ./App
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./App:/app
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://backend:5000
+    networks:
+      - hscmap-network
+networks:
+  hscmap-network:
+    driver: bridge

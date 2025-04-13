@@ -40,5 +40,10 @@ This will start the frontend development server on `localhost:5173` by default.
    ```
 
 Make sure to run the backend in a **separate terminal** from the frontend.
-```
 
+## 🛠 Docker Setup
+
+1. **Run the command to start frontend and backend(this requires docker and docker-compose installed)**
+   ```bash
+   docker compose up --build
+   ``` 

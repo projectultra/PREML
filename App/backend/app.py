@@ -1,4 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
+from flask_cors import CORS
+import requests
 from hscmap.window import Window
 from hscmap.config import config
 import uuid
@@ -7,9 +9,19 @@ import io
 import astropy.io.fits as afits
 
 app = Flask(__name__)
+# Allow CORS for all /api/ endpoints, including nested paths
+CORS(app, supports_credentials=True)
 
-# Store windows in memory (use a database for production)
 windows = {}
+
+@app.route('/hscmap/<path:path>')
+def proxy_hscmap(path):
+    url = f'https://hscmap.mtk.nao.ac.jp/hscMap4/{path}'
+    try:
+        resp = requests.get(url)
+        return Response(resp.content, content_type=resp.headers['content-type'])
+    except requests.RequestException as e:
+        return jsonify({'error': str(e)}), 502
 
 @app.route('/api/window/new', methods=['POST'])
 def new_window():
@@ -20,7 +32,7 @@ def new_window():
     windows[window_id] = window
     return jsonify({
         'id': window_id,
-        'url': config.default_url,  # e.g., '//hscmap.mtk.nao.ac.jp/hscMap4/app/?mode=jupyter'
+        'url': config.default_url,
         'title': title
     })
 
@@ -66,6 +78,28 @@ def new_fits(window_id):
         return jsonify({'id': fits_image._id, 'name': fits_image.name})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/window/<window_id>/selection', methods=['POST'])
+def handle_selection(window_id):
+    data = request.json
+    window = windows.get(window_id)
+    if not window:
+        return jsonify({'error': 'Window not found'}), 404
+    selection_type = data.get('type')
+    if selection_type == 'point':
+        ra = data.get('ra')
+        dec = data.get('dec')
+        catalog_id = data.get('catalog_id')
+        index = data.get('index')
+        print(f"Received point selection: catalog_id={catalog_id}, index={index}, ra={ra}, dec={dec}")
+        return jsonify({'status': 'success', 'ra': ra, 'dec': dec})
+    elif selection_type == 'region':
+        area = data.get('area')
+        c0, c1 = area
+        print(f"Received region selection: c0={{a={c0['a']}, d={c0['d']}}}, c1={{a={c1['a']}, d={c1['d']}}}")
+        return jsonify({'status': 'success', 'area': area})
+    else:
+        return jsonify({'error': 'Invalid selection type'}), 400
 
 @app.route('/api/window/<window_id>/callback/<cbid>', methods=['POST'])
 def handle_callback(window_id, cbid):
