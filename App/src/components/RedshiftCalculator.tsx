@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Calculator, Star, Image, ToggleLeft, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calculator, Star, Image, ToggleLeft, Sparkles, Loader2 } from 'lucide-react';
 
 interface MagnitudeValues {
   u: number;
@@ -9,19 +9,46 @@ interface MagnitudeValues {
   z: number;
 }
 
-const RedshiftCalculator: React.FC = () => {
+interface GalaxyDetails {
+  g_mag: number | null;
+  r_mag: number | null;
+  i_mag: number | null;
+  z_mag: number | null;
+  y_mag: number | null;
+}
+
+interface RedshiftCalculatorProps {
+  externalMagnitudes: GalaxyDetails | null;
+  isDetailsLoading: boolean;
+}
+
+const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({ externalMagnitudes, isDetailsLoading }) => {
   const [isPhotometric, setIsPhotometric] = useState(true);
   const [magnitudes, setMagnitudes] = useState<MagnitudeValues>({
     u: 22.1,
     g: 20.8,
     r: 19.5,
     i: 19.2,
-    z: 18.9
+    z: 18.9,
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [calculatedRedshift, setCalculatedRedshift] = useState<number | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+
+  // Update magnitudes when externalMagnitudes changes
+  useEffect(() => {
+    if (externalMagnitudes && !isDetailsLoading) {
+      setMagnitudes({
+        u: externalMagnitudes.g_mag ?? 0,
+        g: externalMagnitudes.r_mag ?? 0,
+        r: externalMagnitudes.i_mag ?? 0,
+        i: externalMagnitudes.z_mag ?? 0,
+        z: externalMagnitudes.y_mag ?? 0,
+      });
+      setCalculatedRedshift(null); // Reset redshift on new magnitudes
+    }
+  }, [externalMagnitudes, isDetailsLoading]);
 
   const calculatePhotometricRedshift = () => {
     setIsCalculating(true);
@@ -47,9 +74,9 @@ const RedshiftCalculator: React.FC = () => {
   const handleInputChange = (filter: keyof MagnitudeValues) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setMagnitudes(prev => ({
+    setMagnitudes((prev) => ({
       ...prev,
-      [filter]: parseFloat(e.target.value) || 0
+      [filter]: parseFloat(e.target.value) || 0,
     }));
     setCalculatedRedshift(null); // Reset result when input changes
   };
@@ -90,21 +117,28 @@ const RedshiftCalculator: React.FC = () => {
 
       {isPhotometric ? (
         <div className="grid grid-cols-1 gap-4">
-          {Object.entries(magnitudes).map(([filter, value]) => (
-            <div key={filter} className="flex flex-col">
-              <label className="text-sm font-medium text-indigo-200 mb-1 flex items-center gap-2">
-                <Star className="w-4 h-4" />
-                {filter.toUpperCase()} Magnitude
-              </label>
-              <input
-                type="number"
-                value={value}
-                onChange={handleInputChange(filter as keyof MagnitudeValues)}
-                step="0.1"
-                className="input-space px-3 py-2 rounded-md focus:outline-none"
-              />
+          {isDetailsLoading ? (
+            <div className="flex items-center justify-center">
+              <Loader2 className="w-5 h-5 animate-spin text-indigo-300" />
+              <span className="ml-2 text-indigo-200">Loading magnitudes...</span>
             </div>
-          ))}
+          ) : (
+            Object.entries(magnitudes).map(([filter, value]) => (
+              <div key={filter} className="flex flex-col">
+                <label className="text-sm font-medium text-indigo-200 mb-1 flex items-center gap-2">
+                  <Star className="w-4 h-4" />
+                  {filter.toUpperCase()} Magnitude
+                </label>
+                <input
+                  type="number"
+                  value={value}
+                  onChange={handleInputChange(filter as keyof MagnitudeValues)}
+                  step="0.1"
+                  className="input-space px-3 py-2 rounded-md focus:outline-none"
+                />
+              </div>
+            ))
+          )}
         </div>
       ) : (
         <div className="space-y-4">
@@ -120,7 +154,7 @@ const RedshiftCalculator: React.FC = () => {
               className="input-space px-3 py-2 rounded-md focus:outline-none"
             />
           </div>
-          
+
           {imagePreview && (
             <div className="mt-4">
               <img
@@ -136,9 +170,9 @@ const RedshiftCalculator: React.FC = () => {
       <div className="mt-6 flex flex-col gap-4">
         <button
           onClick={isPhotometric ? calculatePhotometricRedshift : calculateImageRedshift}
-          disabled={isCalculating || (!isPhotometric && !selectedImage)}
+          disabled={isCalculating || (!isPhotometric && !selectedImage) || isDetailsLoading}
           className={`w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all ${
-            isCalculating || (!isPhotometric && !selectedImage)
+            isCalculating || (!isPhotometric && !selectedImage) || isDetailsLoading
               ? 'bg-indigo-800 opacity-50 cursor-not-allowed'
               : 'bg-indigo-600 hover:bg-indigo-700'
           }`}
@@ -151,13 +185,13 @@ const RedshiftCalculator: React.FC = () => {
           <p className="text-lg font-semibold text-indigo-200">
             Estimated Redshift:{' '}
             <span className="text-white">
-              {calculatedRedshift !== null 
-                ? calculatedRedshift 
-                : isPhotometric 
-                  ? 'Click calculate to determine redshift'
-                  : selectedImage 
-                    ? 'Click calculate to determine redshift'
-                    : 'Upload an image to calculate'}
+              {calculatedRedshift !== null
+                ? calculatedRedshift
+                : isPhotometric
+                ? 'Click calculate to determine redshift'
+                : selectedImage
+                ? 'Click calculate to determine redshift'
+                : 'Upload an image to calculate'}
             </span>
           </p>
         </div>

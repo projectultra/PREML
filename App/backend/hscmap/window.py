@@ -8,6 +8,7 @@ from .hook import Hook
 from .config import config
 from .typecheck import TypeCheck
 import math
+
 class Window:
     _instances = set()
 
@@ -21,14 +22,52 @@ class Window:
         def handle_message(msg):
             msg_type = msg.get('type')
             args = msg.get('args', {})
+            print(f"Backend received message: type={msg_type}, args={args}") # Debug
             if msg_type == 'close':
                 self._on_close()
             elif msg_type == 'callback':
-                self._callback.call(args['cbid'], args['args'])
+                self._callback.call(args.get('cbid'), args.get('args', []))
             elif msg_type == 'sync_from_frontend':
                 self._sync_from_frontend(args)
+            elif msg_type == 'jump_to':
+                ra = args.get('ra')
+                dec = args.get('dec')
+                fov = args.get('fov')
+                if ra is not None and dec is not None and fov is not None:
+                    self._sync_state['view'] = {'a': ra * math.pi / 180, 'd': dec * math.pi / 180, 'fovy': fov * math.pi / 180}
+                    self._sync_from_kernel('view', self._sync_state['view'])
+                    print(f"Handled jump_to: RA={ra}, Dec={dec}, FOV={fov}")
+                else:
+                    print(f"Invalid jump_to args: {args}")
+            elif msg_type == 'add_catalog':
+                catalog_id = args.get('id')
+                ra = args.get('ra', [])
+                dec = args.get('dec', [])
+                name = args.get('name', 'unnamed')
+                color = args.get('color', [0, 1, 0, 0.5])
+                self._sync_state.setdefault('catalogs', []).append({
+                    'id': catalog_id,
+                    'ra': ra,
+                    'dec': dec,
+                    'name': name,
+                    'color': color
+                })
+                self._sync_from_kernel('catalogs', self._sync_state['catalogs'])
+                print(f"Handled add_catalog: ID={catalog_id}, Name={name}, Points={len(ra)}")
+            elif msg_type == 'catalog_click':
+                self._channel.notify({
+                    'type': 'catalog_click',
+                    'args': args
+                })
+                print(f"Forwarded catalog_click: {args}")
+            elif msg_type == 'region_selection':
+                self._channel.notify({
+                    'type': 'region_selection',
+                    'args': args
+                })
+                print(f"Forwarded region_selection: {args}")
             else:
-                raise RuntimeError(f'unknown message type: {msg_type}')
+                print(f"Unknown message type: {msg_type}")
 
         self._channel = Channel(window_id, handle_message)
         self.catalogs = CatalogManager(self)
@@ -73,7 +112,7 @@ class Window:
         })
 
     def _sync_from_kernel(self, key, value):
-        self._channel.send({
+        self._channel.notify({
             'type': 'sync_from_kernel',
             'args': {key: value},
         })

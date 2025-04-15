@@ -7,6 +7,7 @@ class Channel:
         self._send_queue = []
         self._handlers = handlers
         self._log = []
+        self._subscribers = []
         self._ready = True  # Assume Flask is always ready
 
     def send(self, msg):
@@ -16,7 +17,14 @@ class Channel:
             self._handlers(msg)
         else:
             self._send_queue.append(msg)
+    def notify(self, msg):
+        print(f"Channel notify: {msg}") # Debug
+        for subscriber in self._subscribers:
+            subscriber(msg)
 
+    def subscribe(self, subscriber):
+        print(f"Channel subscribed: {subscriber}") # Debug
+        self._subscribers.append(subscriber)
     def _flush_queue(self):
         while len(self._send_queue) > 0:
             msg = self._send_queue.pop(0)
