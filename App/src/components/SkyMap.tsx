@@ -18,11 +18,22 @@ interface Galaxy {
 }
 
 interface GalaxyDetails {
+  object_id: string;
+  ra: number | null;
+  dec: number | null;
   g_mag: number | null;
   r_mag: number | null;
   i_mag: number | null;
   z_mag: number | null;
   y_mag: number | null;
+  redshift: number | null;
+  morphology: string | null;
+}
+
+interface SkyMapProps {
+  width: number;
+  height: number;
+  onGalaxySelect: (details: GalaxyDetails | null, isLoading: boolean) => void;
 }
 
 const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
@@ -91,13 +102,13 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
   };
 
   // Query details (g, r, i, z, y magnitudes) for a specific galaxy
-  const queryGalaxyDetails = async (objectId: string) => {
+  const queryGalaxyDetails = async (objectId: string, ra: number, dec: number) => {
     console.log(`queryGalaxyDetails: Action=Querying details for object_id=${objectId}`);
     onGalaxySelect(null, true); // Set loading
     try {
       const response = await axios.post(`${apiBaseUrl}/api/queryGalaxyDetails`, { object_id: objectId });
       const details = response.data.details;
-      onGalaxySelect(details, false);
+      onGalaxySelect({ ...details, ra, dec }, false); // Include RA and Dec
       console.log(`queryGalaxyDetails: Action=Received details`, details);
     } catch (error: any) {
       console.error(`queryGalaxyDetails: Action=Failed, error=`, error);
@@ -109,7 +120,7 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
   // Handle galaxy selection
   const handleGalaxySelect = (galaxy: Galaxy) => {
     setSelectedGalaxyId(galaxy.id);
-    queryGalaxyDetails(galaxy.id);
+    queryGalaxyDetails(galaxy.id, galaxy.ra, galaxy.dec);
     console.log(`handleGalaxySelect: Action=Selected galaxy, id=${galaxy.id}`);
   };
 

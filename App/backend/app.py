@@ -16,7 +16,13 @@ import uuid
 import numpy as np
 import io
 import astropy.io.fits as afits
-
+import base64
+from io import BytesIO
+from urllib.parse import urlencode
+import requests
+import matplotlib.pyplot as plt
+from astropy.io import fits
+import numpy as np
 # Load environment variables from .env file
 load_dotenv()
 
@@ -309,9 +315,9 @@ def query_galaxy_details():
 
     credential = {'account_name': HSC_USER, 'password': HSC_PASSWORD}
 
-    # Construct SQL query for g, r, i, z, y magnitudes
+    # Construct SQL query for additional galaxy details
     sql = f"""
-    SELECT g_cmodel_mag, r_cmodel_mag, i_cmodel_mag, z_cmodel_mag, y_cmodel_mag
+    SELECT object_id, ra, dec, g_cmodel_mag, r_cmodel_mag, i_cmodel_mag, z_cmodel_mag, y_cmodel_mag
     FROM pdr3_wide.forced
     WHERE object_id = {object_id}
     AND isprimary
@@ -342,7 +348,7 @@ def query_galaxy_details():
         # Find the header row
         header_row = None
         header_index = -1
-        expected_header = 'g_cmodel_mag,r_cmodel_mag,i_cmodel_mag,z_cmodel_mag,y_cmodel_mag'
+        expected_header = 'object_id,ra,dec,g_cmodel_mag,r_cmodel_mag,i_cmodel_mag,z_cmodel_mag,y_cmodel_mag'
         for i, line in enumerate(csv_lines):
             cleaned_line = line.strip().replace('\ufeff', '')
             if cleaned_line == expected_header or cleaned_line == f'# {expected_header}':
@@ -350,10 +356,9 @@ def query_galaxy_details():
                 header_index = i
                 print(f"query_galaxy_details: Found header at line {i}: '{cleaned_line}'")
                 break
-            print(f"query_galaxy_details: Checking line {i}: '{cleaned_line}'")
 
         if not header_row:
-            print("query_galaxy_details: Error: Header row 'g_cmodel_mag,r_cmodel_mag,i_cmodel_mag,z_cmodel_mag,y_cmodel_mag' not found")
+            print("query_galaxy_details: Error: Header row not found")
             return jsonify({'details': {}, 'warning': 'CSV header not found'}), 200
 
         # Get data rows after header
@@ -372,7 +377,7 @@ def query_galaxy_details():
             return jsonify({'details': {}, 'warning': 'Invalid CSV format'}), 200
 
         # Check expected columns
-        expected_columns = ['g_cmodel_mag', 'r_cmodel_mag', 'i_cmodel_mag', 'z_cmodel_mag', 'y_cmodel_mag']
+        expected_columns = ['object_id', 'ra', 'dec', 'g_cmodel_mag', 'r_cmodel_mag', 'i_cmodel_mag', 'z_cmodel_mag', 'y_cmodel_mag']
         if not all(col in headers for col in expected_columns):
             print(f"query_galaxy_details: Error: Missing expected columns, found={headers}")
             return jsonify({'details': {}, 'warning': f"Expected columns {expected_columns}, got {headers}"}), 200
@@ -382,13 +387,18 @@ def query_galaxy_details():
         for row in reader:
             try:
                 details = {
+                    'object_id': row['object_id'],
+                    'ra': float(row['ra']) if row['ra'] else None,
+                    'dec': float(row['dec']) if row['dec'] else None,
                     'g_mag': float(row['g_cmodel_mag']) if row['g_cmodel_mag'] else None,
                     'r_mag': float(row['r_cmodel_mag']) if row['r_cmodel_mag'] else None,
                     'i_mag': float(row['i_cmodel_mag']) if row['i_cmodel_mag'] else None,
                     'z_mag': float(row['z_cmodel_mag']) if row['z_cmodel_mag'] else None,
                     'y_mag': float(row['y_cmodel_mag']) if row['y_cmodel_mag'] else None,
+                    'redshift': None,  # Placeholder (add redshift query if available)
+                    'morphology': None,  # Placeholder (add morphology query if available)
                 }
-                break  # Only need first row
+                break
             except (KeyError, ValueError) as e:
                 print(f"query_galaxy_details: Warning: Skipping row due to error={str(e)}, row={row}")
                 continue
@@ -399,6 +409,105 @@ def query_galaxy_details():
     except Exception as e:
         print(f"query_galaxy_details: Error: {str(e)}")
         return jsonify({'error': str(e)}), 500
+import base64
+from io import BytesIO
+from urllib.parse import urlencode
+import requests
+import matplotlib
+matplotlib.use('Agg')  # Set non-interactive backend
+import matplotlib.pyplot as plt
+from astropy.io import fits
+import numpy as np
+import os
+import time
 
+# Ensure the cutouts directory exists
+CUTOUT_DIR = os.path.join(os.path.dirname(__file__), 'cutouts')
+os.makedirs(CUTOUT_DIR, exist_ok=True)
+
+@app.route('/api/fetchCutout', methods=['POST'])
+def fetch_cutout():
+    data = request.json
+    ra = data.get('ra')
+    dec = data.get('dec')
+    bands = data.get('bands', ['HSC-G', 'HSC-R', 'HSC-I', 'HSC-Z', 'HSC-Y'])
+    sw = data.get('sw', 0.0896)  # arcmin
+    sh = data.get('sh', 0.0896)  # arcmin
+    rerun = data.get('rerun', 'pdr3_wide')
+
+    if not all([ra is not None, dec is not None]):
+        return jsonify({'error': 'RA and Dec are required'}), 400
+
+    if not HSC_USER or not HSC_PASSWORD:
+        print("fetch_cutout: Error: HSC credentials not found in .env")
+        return jsonify({'error': 'HSC credentials not configured'}), 500
+
+    results = []
+    for filter_type in bands:
+        try:
+            # Construct the cutout URL
+            params = {
+                'ra': ra,
+                'dec': dec,
+                'filter': filter_type,
+                'sw': f'{sw}arcmin',
+                'sh': f'{sh}arcmin',
+                'image': 'true',
+                'variance': 'false',
+                'mask': 'false',
+                'rerun': rerun,
+            }
+            url = f"https://hsc-release.mtk.nao.ac.jp/das_cutout/pdr3/cgi-bin/cutout?{urlencode(params)}"
+            print(f"fetch_cutout: Fetching cutout, url={url}, filter={filter_type}")
+
+            # Make the request with authentication
+            auth = (HSC_USER, HSC_PASSWORD)
+            response = requests.get(url, auth=auth, stream=True)
+            response.raise_for_status()
+
+            # Read the FITS file
+            hdul = fits.open(BytesIO(response.content))
+            data = hdul[1].data  # Get image data from the second HDU
+            hdul.close()
+
+            # Create a matplotlib figure for the image
+            fig = plt.figure(figsize=(4, 4))
+            plt.imshow(data, cmap='gray', origin='lower')
+            plt.axis('off')  # Hide axes
+
+            # Save to BytesIO for base64 encoding
+            buffer = BytesIO()
+            plt.savefig(buffer, format='jpeg', bbox_inches='tight', pad_inches=0, dpi=100)
+            buffer.seek(0)
+            image_data = buffer.getvalue()
+
+            # Save to file for debugging
+            # timestamp = int(time.time() * 1000)  # Milliseconds
+            # filename = f"cutout_ra{ra}_dec{dec}_{filter_type}_{timestamp}.jpg"
+            # file_path = os.path.join(CUTOUT_DIR, filename)
+            # with open(file_path, 'wb') as f:
+            #     f.write(image_data)
+            # print(f"fetch_cutout: Saved cutout to {file_path}")
+
+            # Convert to base64
+            image_base64 = base64.b64encode(image_data).decode('utf-8')
+            mime_type = 'image/jpeg'
+
+            plt.close(fig)  # Close figure to free memory
+
+            print(f"fetch_cutout: Successfully converted cutout to JPEG, filter={filter_type}")
+            results.append({
+                'image': f'data:{mime_type};base64,{image_base64}',
+                'filter': filter_type,
+            })
+
+        except Exception as e:
+            print(f"fetch_cutout: Error for filter {filter_type}: {str(e)}")
+            results.append({
+                'filter': filter_type,
+                'error': str(e),
+            })
+
+    return jsonify({'cutouts': results})    
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

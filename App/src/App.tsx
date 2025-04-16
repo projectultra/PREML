@@ -1,23 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Telescope, Star, Sparkles } from 'lucide-react';
 import RedshiftCalculator from './components/RedshiftCalculator';
 import SkyMap from './components/SkyMap';
+import GalaxyDetails from './components/GalaxyDetails';
+import axios from 'axios';
 
-interface GalaxyDetails {
+interface GalaxyDetailsInterface {
+  object_id: string;
+  ra: number | null;
+  dec: number | null;
   g_mag: number | null;
   r_mag: number | null;
   i_mag: number | null;
   z_mag: number | null;
   y_mag: number | null;
+  redshift: number | null;
+  morphology: string | null;
+}
+
+interface CutoutImage {
+  url: string;
+  filter: string;
+  error?: string;
 }
 
 function App() {
-  const [selectedMagnitudes, setSelectedMagnitudes] = useState<GalaxyDetails | null>(null);
+  const [selectedGalaxy, setSelectedGalaxy] = useState<GalaxyDetailsInterface | null>(null);
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
+  const [cutoutImages, setCutoutImages] = useState<CutoutImage[]>([]);
+  const [isCutoutsLoading, setIsCutoutsLoading] = useState(false);
+  const apiBaseUrl = 'http://localhost:5000';
 
-  const handleGalaxySelect = (details: GalaxyDetails | null, isLoading: boolean) => {
-    setSelectedMagnitudes(details);
+  const handleGalaxySelect = async (details: GalaxyDetailsInterface | null, isLoading: boolean) => {
+    setSelectedGalaxy(details);
     setIsDetailsLoading(isLoading);
+    setCutoutImages([]); // Reset cutouts
+    setIsCutoutsLoading(true); // Start cutout loading
+
+    if (details && details.ra !== null && details.dec !== null && !isLoading) {
+      // Fetch cutout images for all HSC bands
+      const bands = ['HSC-G', 'HSC-R', 'HSC-I', 'HSC-Z', 'HSC-Y'];
+      try {
+        const response = await axios.post(`${apiBaseUrl}/api/fetchCutout`, {
+          ra: details.ra,
+          dec: details.dec,
+          bands,
+        });
+        const cutouts: CutoutImage[] = response.data.cutouts.map((cutout: any) => ({
+          url: cutout.image || '',
+          filter: cutout.filter,
+          error: cutout.error,
+        }));
+        setCutoutImages(cutouts);
+      } catch (error) {
+        console.error('Failed to fetch cutouts:', error);
+        setCutoutImages(bands.map((filter) => ({ filter, url: '', error: 'Failed to load cutout' })));
+      } finally {
+        setIsCutoutsLoading(false); // End cutout loading
+      }
+    } else {
+      setIsCutoutsLoading(false); // No cutouts to load
+    }
   };
 
   return (
@@ -58,11 +101,40 @@ function App() {
             </div>
           </div>
 
-          {/* Redshift Calculator */}
-          <div className="relative max-w-md">
-            <div className="glass-effect rounded-lg p-8 relative overflow-hidden">
-              <Sparkles className="absolute top-4 right-4 w-6 h-6 text-indigo-300 opacity-50" />
-              <RedshiftCalculator externalMagnitudes={selectedMagnitudes} isDetailsLoading={isDetailsLoading} />
+          {/* Redshift Calculator and Galaxy Details */}
+          <div className="relative flex flex-col md:flex-row gap-8">
+            {/* Redshift Calculator */}
+            <div className="max-w-md flex-1">
+              <div className="glass-effect rounded-lg p-8 relative overflow-hidden">
+                <Sparkles className="absolute top-4 right-4 w-6 h-6 text-indigo-300 opacity-50" />
+                <RedshiftCalculator
+                  externalMagnitudes={
+                    selectedGalaxy
+                      ? {
+                          g_mag: selectedGalaxy.g_mag,
+                          r_mag: selectedGalaxy.r_mag,
+                          i_mag: selectedGalaxy.i_mag,
+                          z_mag: selectedGalaxy.z_mag,
+                          y_mag: selectedGalaxy.y_mag,
+                        }
+                      : null
+                  }
+                  isDetailsLoading={isDetailsLoading}
+                />
+              </div>
+            </div>
+
+            {/* Galaxy Details */}
+            <div className="max-w-3xl flex-1"> {/* Changed from max-w-md */}
+              <div className="glass-effect rounded-lg p-8 relative overflow-hidden">
+                <Sparkles className="absolute top-4 right-4 w-6 h-6 text-indigo-300 opacity-50" />
+                <GalaxyDetails
+                  galaxy={selectedGalaxy}
+                  cutoutImages={cutoutImages}
+                  isLoading={isDetailsLoading}
+                  isCutoutsLoading={isCutoutsLoading}
+                />
+              </div>
             </div>
           </div>
         </div>

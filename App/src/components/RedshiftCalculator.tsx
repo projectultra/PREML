@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Calculator, Star, Image, ToggleLeft, Sparkles, Loader2 } from 'lucide-react';
 
 interface MagnitudeValues {
-  u: number;
   g: number;
   r: number;
   i: number;
   z: number;
+  y: number;
 }
 
 interface GalaxyDetails {
@@ -25,11 +25,11 @@ interface RedshiftCalculatorProps {
 const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({ externalMagnitudes, isDetailsLoading }) => {
   const [isPhotometric, setIsPhotometric] = useState(true);
   const [magnitudes, setMagnitudes] = useState<MagnitudeValues>({
-    u: 22.1,
     g: 20.8,
     r: 19.5,
     i: 19.2,
     z: 18.9,
+    y: 18.7, // Default value for y, slightly adjusted
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -40,11 +40,11 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({ externalMagnitu
   useEffect(() => {
     if (externalMagnitudes && !isDetailsLoading) {
       setMagnitudes({
-        u: externalMagnitudes.g_mag ?? 0,
-        g: externalMagnitudes.r_mag ?? 0,
-        r: externalMagnitudes.i_mag ?? 0,
-        i: externalMagnitudes.z_mag ?? 0,
-        z: externalMagnitudes.y_mag ?? 0,
+        g: externalMagnitudes.g_mag ?? 0,
+        r: externalMagnitudes.r_mag ?? 0,
+        i: externalMagnitudes.i_mag ?? 0,
+        z: externalMagnitudes.z_mag ?? 0,
+        y: externalMagnitudes.y_mag ?? 0,
       });
       setCalculatedRedshift(null); // Reset redshift on new magnitudes
     }
