@@ -2,7 +2,7 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./App/backend
+      context: ./app/backend
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
@@ -14,12 +14,12 @@ services:
       - hscmap-network
   frontend:
     build:
-      context: ./App
+      context: ./app
       dockerfile: Dockerfile
     ports:
       - "5173:5173"
     volumes:
-      - ./App:/app
+      - ./app:/app
     depends_on:
       - backend
     environment:
