@@ -29,7 +29,7 @@ function App() {
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
   const [cutoutImages, setCutoutImages] = useState<CutoutImage[]>([]);
   const [isCutoutsLoading, setIsCutoutsLoading] = useState(false);
-  const apiBaseUrl = 'http://localhost:5000';
+  const apiBaseUrl = 'http://localhost:7333';
 
   const handleGalaxySelect = async (details: GalaxyDetailsInterface | null, isLoading: boolean) => {
     setSelectedGalaxy(details);

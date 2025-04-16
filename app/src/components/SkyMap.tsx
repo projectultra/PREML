@@ -47,7 +47,7 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
   const [raDecInput, setRaDecInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const apiBaseUrl = typeof window !== 'undefined' ? 'http://localhost:5000' : (import.meta.env.VITE_API_URL || 'http://localhost:5000');
+  const apiBaseUrl = typeof window !== 'undefined' ? 'http://localhost:7333' : (import.meta.env.VITE_API_URL || 'http://localhost:7333');
 
   // Parse RA and Dec from input string like "α=75.194502° δ=-33.193044°"
   const parseRaDec = (input: string): { ra: number; dec: number } | null => {
