@@ -24,12 +24,12 @@ jobs:
 
     - name: Build and push backend Docker image
       run: |
-        docker-compose build backend
-        docker tag backend:latest jonasferrao/preml:backend-latest
+        docker compose build backend
+        docker tag preml-backend jonasferrao/preml:backend-latest
         docker push jonasferrao/preml:backend-latest
 
     - name: Build and push frontend Docker image
       run: |
-        docker-compose build frontend
-        docker tag frontend:latest jonasferrao/preml:frontend-latest
+        docker compose build frontend
+        docker tag preml-frontend jonasferrao/preml:frontend-latest
         docker push jonasferrao/preml:frontend-latest
