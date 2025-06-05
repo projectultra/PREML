@@ -1,15 +1,22 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import numpy as np
 import onnxruntime as ort
 
 # Load ONNX model
-session = ort.InferenceSession(
-    r"app\backend\main_network.onnx", providers=["CPUExecutionProvider"]
-)
+session = ort.InferenceSession(r"main_network.onnx", providers=["CPUExecutionProvider"])
 
 # Define FastAPI app
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or specify your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # Define input format
@@ -21,7 +28,8 @@ class InputData(BaseModel):
 def predict(input_data: InputData):
     # Convert input to NumPy array
     input_array = np.array(input_data.data, dtype=np.float32).reshape(1, -1)
-
+    # Normalize input data
+    input_array = (input_array - np.mean(input_array)) / (np.std(input_array) + 1e-8)
     # Run inference
     output = session.run(None, {"input": input_array})
 

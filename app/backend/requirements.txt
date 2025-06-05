@@ -3,6 +3,7 @@ annotated-types==0.7.0
 anyio==4.9.0
 appdirs==1.4.4
 asttokens==3.0.0
+blinker==1.9.0
 certifi==2025.4.26
 charset-normalizer==3.4.1
 click==8.1.8
@@ -15,6 +16,8 @@ decorator==5.2.1
 diskcache==5.6.3
 executing==2.2.0
 fastapi==0.115.12
+Flask==3.1.1
+flask-cors==6.0.0
 flatbuffers==25.2.10
 fonttools==4.57.0
 glcontext==3.0.0
@@ -24,13 +27,16 @@ idna==3.10
 ipython==9.1.0
 ipython_pygments_lexers==1.1.1
 isosurfaces==0.1.2
+itsdangerous==2.2.0
 jedi==0.19.2
+Jinja2==3.1.6
 kiwisolver==1.4.8
 line_profiler==4.2.0
 manimgl==1.7.2
 ManimPango==0.6.0
 mapbox_earcut==1.0.3
 markdown-it-py==3.0.0
+MarkupSafe==3.0.2
 matplotlib==3.10.1
 matplotlib-inline==0.1.7
 mdurl==0.1.2
@@ -76,3 +82,4 @@ urllib3==2.4.0
 uvicorn==0.34.2
 validators==0.34.0
 wcwidth==0.2.13
+Werkzeug==3.1.3

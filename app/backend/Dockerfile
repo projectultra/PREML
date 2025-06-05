@@ -7,6 +7,13 @@ WORKDIR /app
 # Copy requirements first to leverage Docker cache
 COPY requirements.txt .
 
+RUN apt update && apt install -y \
+    python3.11-dev \
+    build-essential \
+    pkg-config \
+    libcairo2-dev \
+    libpango1.0-dev
+
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 

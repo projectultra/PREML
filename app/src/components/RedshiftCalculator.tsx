@@ -1,5 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Calculator, Star, Image, ToggleLeft, Sparkles, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  Calculator,
+  Star,
+  Image,
+  ToggleLeft,
+  Sparkles,
+  Loader2,
+} from "lucide-react";
 
 interface MagnitudeValues {
   g: number;
@@ -22,7 +29,10 @@ interface RedshiftCalculatorProps {
   isDetailsLoading: boolean;
 }
 
-const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({ externalMagnitudes, isDetailsLoading }) => {
+const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
+  externalMagnitudes,
+  isDetailsLoading,
+}) => {
   const [isPhotometric, setIsPhotometric] = useState(true);
   const [magnitudes, setMagnitudes] = useState<MagnitudeValues>({
     g: 20.8,
@@ -33,7 +43,9 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({ externalMagnitu
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [calculatedRedshift, setCalculatedRedshift] = useState<number | null>(null);
+  const [calculatedRedshift, setCalculatedRedshift] = useState<number | null>(
+    null
+  );
   const [isCalculating, setIsCalculating] = useState(false);
 
   // Update magnitudes when externalMagnitudes changes
@@ -50,14 +62,40 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({ externalMagnitu
     }
   }, [externalMagnitudes, isDetailsLoading]);
 
-  const calculatePhotometricRedshift = () => {
+  const calculatePhotometricRedshift = async () => {
     setIsCalculating(true);
-    // Simulate calculation with random value between 0.1 and 3.0
-    const randomRedshift = (Math.random() * 2.9 + 0.1).toFixed(3);
-    setTimeout(() => {
-      setCalculatedRedshift(Number(randomRedshift));
+    setCalculatedRedshift(null);
+    try {
+      const response = await fetch("http://localhost:8000/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          data: [
+            magnitudes.g,
+            magnitudes.r,
+            magnitudes.i,
+            magnitudes.z,
+            magnitudes.y,
+          ],
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Inference failed");
+      }
+      const result = await response.json();
+      // If prediction is an array, use the first value; adjust as needed
+      const redshift =
+        Array.isArray(result.prediction) && result.prediction.length > 0
+          ? result.prediction[0]
+          : result.prediction;
+      setCalculatedRedshift(Number(redshift));
+    } catch (error) {
+      setCalculatedRedshift(null);
+      // Optionally, show error to user
+      console.error(error);
+    } finally {
       setIsCalculating(false);
-    }, 800); // Add slight delay for effect
+    }
   };
 
   const calculateImageRedshift = () => {
@@ -71,15 +109,15 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({ externalMagnitu
     }, 1200); // Longer delay for image processing simulation
   };
 
-  const handleInputChange = (filter: keyof MagnitudeValues) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setMagnitudes((prev) => ({
-      ...prev,
-      [filter]: parseFloat(e.target.value) || 0,
-    }));
-    setCalculatedRedshift(null); // Reset result when input changes
-  };
+  const handleInputChange =
+    (filter: keyof MagnitudeValues) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setMagnitudes((prev) => ({
+        ...prev,
+        [filter]: parseFloat(e.target.value) || 0,
+      }));
+      setCalculatedRedshift(null); // Reset result when input changes
+    };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -111,7 +149,9 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({ externalMagnitu
           className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition-colors"
         >
           <ToggleLeft className="w-5 h-5" />
-          <span>{isPhotometric ? 'Switch to Image' : 'Switch to Photometric'}</span>
+          <span>
+            {isPhotometric ? "Switch to Image" : "Switch to Photometric"}
+          </span>
         </button>
       </div>
 
@@ -120,7 +160,9 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({ externalMagnitu
           {isDetailsLoading ? (
             <div className="flex items-center justify-center">
               <Loader2 className="w-5 h-5 animate-spin text-indigo-300" />
-              <span className="ml-2 text-indigo-200">Loading magnitudes...</span>
+              <span className="ml-2 text-indigo-200">
+                Loading magnitudes...
+              </span>
             </div>
           ) : (
             Object.entries(magnitudes).map(([filter, value]) => (
@@ -169,29 +211,41 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({ externalMagnitu
 
       <div className="mt-6 flex flex-col gap-4">
         <button
-          onClick={isPhotometric ? calculatePhotometricRedshift : calculateImageRedshift}
-          disabled={isCalculating || (!isPhotometric && !selectedImage) || isDetailsLoading}
+          onClick={
+            isPhotometric
+              ? calculatePhotometricRedshift
+              : calculateImageRedshift
+          }
+          disabled={
+            isCalculating ||
+            (!isPhotometric && !selectedImage) ||
+            isDetailsLoading
+          }
           className={`w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all ${
-            isCalculating || (!isPhotometric && !selectedImage) || isDetailsLoading
-              ? 'bg-indigo-800 opacity-50 cursor-not-allowed'
-              : 'bg-indigo-600 hover:bg-indigo-700'
+            isCalculating ||
+            (!isPhotometric && !selectedImage) ||
+            isDetailsLoading
+              ? "bg-indigo-800 opacity-50 cursor-not-allowed"
+              : "bg-indigo-600 hover:bg-indigo-700"
           }`}
         >
-          <Sparkles className={`w-5 h-5 ${isCalculating ? 'animate-spin' : ''}`} />
-          {isCalculating ? 'Calculating...' : 'Calculate Redshift'}
+          <Sparkles
+            className={`w-5 h-5 ${isCalculating ? "animate-spin" : ""}`}
+          />
+          {isCalculating ? "Calculating..." : "Calculate Redshift"}
         </button>
 
         <div className="p-4 bg-indigo-900 bg-opacity-30 rounded-lg border border-indigo-500/20">
           <p className="text-lg font-semibold text-indigo-200">
-            Estimated Redshift:{' '}
+            Estimated Redshift:{" "}
             <span className="text-white">
               {calculatedRedshift !== null
                 ? calculatedRedshift
                 : isPhotometric
-                ? 'Click calculate to determine redshift'
+                ? "Click calculate to determine redshift"
                 : selectedImage
-                ? 'Click calculate to determine redshift'
-                : 'Upload an image to calculate'}
+                ? "Click calculate to determine redshift"
+                : "Upload an image to calculate"}
             </span>
           </p>
         </div>
