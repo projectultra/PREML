@@ -18,10 +18,10 @@ services:
       context: ./app/backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "6000:6000"
     volumes:
       - ./app/backend:/app
-    command: ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "6000"]
     networks:
       - hscmap-network
 

@@ -66,7 +66,7 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
     setIsCalculating(true);
     setCalculatedRedshift(null);
     try {
-      const response = await fetch("https://localhost:8000/predict", {
+      const response = await fetch("https://localhost:6000/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
