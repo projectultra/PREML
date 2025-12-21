@@ -65,8 +65,11 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
   const calculatePhotometricRedshift = async () => {
     setIsCalculating(true);
     setCalculatedRedshift(null);
+    const inferenceUrl = import.meta.env.VITE_INFERENCE_URL
+      ? `${import.meta.env.VITE_INFERENCE_URL}/predict`
+      : "http://localhost:6001/predict";
     try {
-      const response = await fetch("https://localhost:6000/predict", {
+      const response = await fetch(inferenceUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -111,13 +114,13 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
 
   const handleInputChange =
     (filter: keyof MagnitudeValues) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setMagnitudes((prev) => ({
-        ...prev,
-        [filter]: parseFloat(e.target.value) || 0,
-      }));
-      setCalculatedRedshift(null); // Reset result when input changes
-    };
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMagnitudes((prev) => ({
+          ...prev,
+          [filter]: parseFloat(e.target.value) || 0,
+        }));
+        setCalculatedRedshift(null); // Reset result when input changes
+      };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -221,13 +224,12 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
             (!isPhotometric && !selectedImage) ||
             isDetailsLoading
           }
-          className={`w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all ${
-            isCalculating ||
+          className={`w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all ${isCalculating ||
             (!isPhotometric && !selectedImage) ||
             isDetailsLoading
-              ? "bg-indigo-800 opacity-50 cursor-not-allowed"
-              : "bg-indigo-600 hover:bg-indigo-700"
-          }`}
+            ? "bg-indigo-800 opacity-50 cursor-not-allowed"
+            : "bg-indigo-600 hover:bg-indigo-700"
+            }`}
         >
           <Sparkles
             className={`w-5 h-5 ${isCalculating ? "animate-spin" : ""}`}
@@ -242,10 +244,10 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
               {calculatedRedshift !== null
                 ? calculatedRedshift
                 : isPhotometric
-                ? "Click calculate to determine redshift"
-                : selectedImage
-                ? "Click calculate to determine redshift"
-                : "Upload an image to calculate"}
+                  ? "Click calculate to determine redshift"
+                  : selectedImage
+                    ? "Click calculate to determine redshift"
+                    : "Upload an image to calculate"}
             </span>
           </p>
         </div>

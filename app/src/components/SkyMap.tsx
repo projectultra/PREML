@@ -48,9 +48,7 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const apiBaseUrl =
-    typeof window !== "undefined"
-      ? "https://localhost:7333"
-      : import.meta.env.VITE_API_URL || "https://localhost:7333";
+    import.meta.env.VITE_API_URL || "https://localhost:7333";
 
   // Parse RA and Dec from input string like "α=75.194502° δ=-33.193044°"
   const parseRaDec = (input: string): { ra: number; dec: number } | null => {
@@ -290,9 +288,8 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
         </div>
         <button
           onClick={handleSearchGalaxies}
-          className={`flex items-center justify-center px-4 py-2 rounded text-white ${
-            isLoading ? 'bg-indigo-800 opacity-50 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
-          }`}
+          className={`flex items-center justify-center px-4 py-2 rounded text-white ${isLoading ? 'bg-indigo-800 opacity-50 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
+            }`}
           disabled={isLoading}
         >
           {isLoading ? (
@@ -326,11 +323,10 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
                   <li
                     key={galaxy.id}
                     onClick={() => handleGalaxySelect(galaxy)}
-                    className={`p-2 rounded cursor-pointer ${
-                      selectedGalaxyId === galaxy.id
-                        ? 'bg-indigo-600'
-                        : 'bg-gray-700 hover:bg-gray-600'
-                    }`}
+                    className={`p-2 rounded cursor-pointer ${selectedGalaxyId === galaxy.id
+                      ? 'bg-indigo-600'
+                      : 'bg-gray-700 hover:bg-gray-600'
+                      }`}
                   >
                     <div className="text-sm">
                       <span className="font-medium">ID:</span> {galaxy.id}
