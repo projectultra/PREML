@@ -48,7 +48,7 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const apiBaseUrl =
-    import.meta.env.VITE_API_URL || "https://localhost:7333";
+    import.meta.env.VITE_API_URL || "";
 
   // Parse RA and Dec from input string like "α=75.194502° δ=-33.193044°"
   const parseRaDec = (input: string): { ra: number; dec: number } | null => {
@@ -144,7 +144,7 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
       .then((response) => {
         const { id, url } = response.data;
         setWindowId(id);
-        setIframeUrl(new URL(url, apiBaseUrl).toString());
+        setIframeUrl(new URL(url, apiBaseUrl || window.location.origin).toString());
         console.log(`createWindow: Action=Created window, id=${id}, url=${url}`);
       })
       .catch((error) => {

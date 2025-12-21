@@ -39,8 +39,8 @@ services:
     depends_on:
       - backend
     environment:
-      - VITE_API_URL=http://localhost:7333
-      - VITE_INFERENCE_URL=http://localhost:6001
+      - VITE_API_URL=
+      - VITE_INFERENCE_URL=
     networks:
       - hscmap-network
 networks:

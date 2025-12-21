@@ -29,7 +29,7 @@ function App() {
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
   const [cutoutImages, setCutoutImages] = useState<CutoutImage[]>([]);
   const [isCutoutsLoading, setIsCutoutsLoading] = useState(false);
-  const apiBaseUrl = 'http://localhost:7333';
+  const apiBaseUrl = import.meta.env.VITE_API_URL || '';
 
   const handleGalaxySelect = async (details: GalaxyDetailsInterface | null, isLoading: boolean) => {
     setSelectedGalaxy(details);
@@ -111,12 +111,12 @@ function App() {
                   externalMagnitudes={
                     selectedGalaxy
                       ? {
-                          g_mag: selectedGalaxy.g_mag,
-                          r_mag: selectedGalaxy.r_mag,
-                          i_mag: selectedGalaxy.i_mag,
-                          z_mag: selectedGalaxy.z_mag,
-                          y_mag: selectedGalaxy.y_mag,
-                        }
+                        g_mag: selectedGalaxy.g_mag,
+                        r_mag: selectedGalaxy.r_mag,
+                        i_mag: selectedGalaxy.i_mag,
+                        z_mag: selectedGalaxy.z_mag,
+                        y_mag: selectedGalaxy.y_mag,
+                      }
                       : null
                   }
                   isDetailsLoading={isDetailsLoading}
