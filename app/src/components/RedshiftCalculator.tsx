@@ -65,10 +65,9 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
   const calculatePhotometricRedshift = async () => {
     setIsCalculating(true);
     setCalculatedRedshift(null);
-    const inferenceUrl = import.meta.env.VITE_INFERENCE_URL
-      ? `${import.meta.env.VITE_INFERENCE_URL}/predict`
-      : "/predict";
-    console.log(`RedshiftCalculator: Requesting inference URL="${inferenceUrl}"`);
+    // Use relative path to leverage Vite proxy and avoid mixed content errors in production
+    const inferenceUrl = "/predict";
+    console.log(`RedshiftCalculator: Requesting inference URL="${inferenceUrl}" (forced to relative)`);
     try {
       const response = await fetch(inferenceUrl, {
         method: "POST",

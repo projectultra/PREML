@@ -47,8 +47,9 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
   const [raDecInput, setRaDecInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const apiBaseUrl = import.meta.env.VITE_API_URL || "";
-  console.log(`SkyMap: apiBaseUrl="${apiBaseUrl}"`);
+  // Use relative paths to leverage Vite proxy and avoid mixed content errors in production
+  const apiBaseUrl = "";
+  console.log(`SkyMap: apiBaseUrl="${apiBaseUrl}" (forced to relative)`);
 
   // Parse RA and Dec from input string like "α=75.194502° δ=-33.193044°"
   const parseRaDec = (input: string): { ra: number; dec: number } | null => {
