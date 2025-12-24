@@ -47,8 +47,8 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
   const [raDecInput, setRaDecInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const apiBaseUrl =
-    import.meta.env.VITE_API_URL || "";
+  const apiBaseUrl = import.meta.env.VITE_API_URL || "";
+  console.log(`SkyMap: apiBaseUrl="${apiBaseUrl}"`);
 
   // Parse RA and Dec from input string like "α=75.194502° δ=-33.193044°"
   const parseRaDec = (input: string): { ra: number; dec: number } | null => {
@@ -79,7 +79,9 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
     console.log(`queryHscDatabase: Action=Querying with RA=${ra.toFixed(6)}, Dec=${dec.toFixed(6)}`);
     setIsLoading(true);
     try {
-      const response = await axios.post(`${apiBaseUrl}/api/queryGalaxies`, {
+      const url = `${apiBaseUrl}/api/queryGalaxies`;
+      console.log(`queryHscDatabase: Requesting URL="${url}"`);
+      const response = await axios.post(url, {
         ra,
         dec,
         radius: 10 / 3600, // 10 arcseconds
@@ -107,7 +109,9 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
     console.log(`queryGalaxyDetails: Action=Querying details for object_id=${objectId}`);
     onGalaxySelect(null, true); // Set loading
     try {
-      const response = await axios.post(`${apiBaseUrl}/api/queryGalaxyDetails`, { object_id: objectId });
+      const url = `${apiBaseUrl}/api/queryGalaxyDetails`;
+      console.log(`queryGalaxyDetails: Requesting URL="${url}"`);
+      const response = await axios.post(url, { object_id: objectId });
       const details = response.data.details;
       onGalaxySelect({ ...details, ra, dec }, false); // Include RA and Dec
       console.log(`queryGalaxyDetails: Action=Received details`, details);
@@ -139,8 +143,10 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
 
   // Initialize window
   useEffect(() => {
+    const url = `${apiBaseUrl}/api/window/new`;
+    console.log(`createWindow: Requesting URL="${url}"`);
     axios
-      .post(`${apiBaseUrl}/api/window/new`, { title: 'My HSC Map' })
+      .post(url, { title: 'My HSC Map' })
       .then((response) => {
         const { id, url } = response.data;
         setWindowId(id);
@@ -163,8 +169,10 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
       (message) => {
         console.log(`handleIframeMessage: Action=Received message`, { type: message.type, args: message.args });
         if (message.type === 'callback') {
+          const url = `${apiBaseUrl}/api/window/${windowId}/callback/${message.args.cbid}`;
+          console.log(`handleIframeMessage: Callback URL="${url}"`);
           axios
-            .post(`${apiBaseUrl}/api/window/${windowId}/callback/${message.args.cbid}`, {
+            .post(url, {
               args: message.args.args,
             })
             .catch((error) => console.error('Callback error:', error));
@@ -172,8 +180,10 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
           const { catalog_id, index, ra, dec } = message.args;
           console.log(`Catalog click: catalog_id=${catalog_id}, index=${index}, ra=${ra}, dec=${dec}`);
           setSelection(`Point: RA=${ra.toFixed(4)}, Dec=${dec.toFixed(4)}`);
+          const url = `${apiBaseUrl}/api/window/${windowId}/selection`;
+          console.log(`handleIframeMessage: Selection URL="${url}"`);
           axios
-            .post(`${apiBaseUrl}/api/window/${windowId}/selection`, {
+            .post(url, {
               type: 'point',
               catalog_id,
               index,
@@ -189,8 +199,10 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
             `Region: RA1=${(c0.a * 180 / Math.PI).toFixed(4)}, Dec1=${(c0.d * 180 / Math.PI).toFixed(4)}, ` +
             `RA2=${(c1.a * 180 / Math.PI).toFixed(4)}, Dec2=${(c1.d * 180 / Math.PI).toFixed(4)}`
           );
+          const url = `${apiBaseUrl}/api/window/${windowId}/selection`;
+          console.log(`handleIframeMessage: Region Selection URL="${url}"`);
           axios
-            .post(`${apiBaseUrl}/api/window/${windowId}/selection`, {
+            .post(url, {
               type: 'region',
               area,
             })
@@ -202,8 +214,10 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
     );
 
     // Add catalog
+    const catalogUrl = `${apiBaseUrl}/api/window/${windowId}/catalog/new`;
+    console.log(`SkyMap: Adding catalog URL="${catalogUrl}"`);
     axios
-      .post(`${apiBaseUrl}/api/window/${windowId}/catalog/new`, {
+      .post(catalogUrl, {
         ra: [150.0, 151.0],
         dec: [1.0, 2.0],
         name: 'Sample Catalog',
@@ -216,8 +230,10 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
       .catch((error) => console.error('Failed to add catalog:', error));
 
     // Jump to position
+    const jumpUrl = `${apiBaseUrl}/api/window/${windowId}/jump_to`;
+    console.log(`SkyMap: Jump to URL="${jumpUrl}"`);
     axios
-      .post(`${apiBaseUrl}/api/window/${windowId}/jump_to`, {
+      .post(jumpUrl, {
         ra: 150.5,
         dec: 1.5,
         fov: 1.0,

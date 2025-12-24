@@ -67,7 +67,8 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
     setCalculatedRedshift(null);
     const inferenceUrl = import.meta.env.VITE_INFERENCE_URL
       ? `${import.meta.env.VITE_INFERENCE_URL}/predict`
-      : "http://localhost:6001/predict";
+      : "/predict";
+    console.log(`RedshiftCalculator: Requesting inference URL="${inferenceUrl}"`);
     try {
       const response = await fetch(inferenceUrl, {
         method: "POST",

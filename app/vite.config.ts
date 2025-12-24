@@ -15,6 +15,16 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/predict': {
+        target: process.env.VITE_INFERENCE_PROXY_TARGET || 'http://inference:6001',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/hscmap': {
+        target: process.env.VITE_API_PROXY_TARGET || 'http://backend:7333',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });
