@@ -442,8 +442,7 @@ def fetch_cutout():
         print("fetch_cutout: Error: HSC credentials not found in .env")
         return jsonify({'error': 'HSC credentials not configured'}), 500
 
-    results = []
-    for filter_type in bands:
+    def process_band(filter_type):
         try:
             # Construct the cutout URL
             params = {
@@ -462,7 +461,7 @@ def fetch_cutout():
 
             # Make the request with authentication
             auth = (HSC_USER, HSC_PASSWORD)
-            response = requests.get(url, auth=auth, stream=True)
+            response = requests.get(url, auth=auth, stream=True, timeout=30)
             response.raise_for_status()
 
             # Read the FITS file
@@ -481,14 +480,6 @@ def fetch_cutout():
             buffer.seek(0)
             image_data = buffer.getvalue()
 
-            # Save to file for debugging
-            # timestamp = int(time.time() * 1000)  # Milliseconds
-            # filename = f"cutout_ra{ra}_dec{dec}_{filter_type}_{timestamp}.jpg"
-            # file_path = os.path.join(CUTOUT_DIR, filename)
-            # with open(file_path, 'wb') as f:
-            #     f.write(image_data)
-            # print(f"fetch_cutout: Saved cutout to {file_path}")
-
             # Convert to base64
             image_base64 = base64.b64encode(image_data).decode('utf-8')
             mime_type = 'image/jpeg'
@@ -496,17 +487,27 @@ def fetch_cutout():
             plt.close(fig)  # Close figure to free memory
 
             print(f"fetch_cutout: Successfully converted cutout to JPEG, filter={filter_type}")
-            results.append({
+            return {
                 'image': f'data:{mime_type};base64,{image_base64}',
                 'filter': filter_type,
-            })
+            }
 
         except Exception as e:
             print(f"fetch_cutout: Error for filter {filter_type}: {str(e)}")
-            results.append({
+            return {
                 'filter': filter_type,
                 'error': str(e),
-            })
+            }
+
+    import concurrent.futures
+    results = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(bands)) as executor:
+        future_to_band = {executor.submit(process_band, band): band for band in bands}
+        for future in concurrent.futures.as_completed(future_to_band):
+            results.append(future.result())
+
+    # Sort results to match the order of bands
+    results.sort(key=lambda x: bands.index(x['filter']))
 
     return jsonify({'cutouts': results})    
 if __name__ == '__main__':

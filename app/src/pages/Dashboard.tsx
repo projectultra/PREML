@@ -12,7 +12,7 @@ const Dashboard: React.FC = () => {
     const [isDetailsLoading, setIsDetailsLoading] = useState(false);
     const [cutoutImages, setCutoutImages] = useState<CutoutImage[]>([]);
     const [isCutoutsLoading, setIsCutoutsLoading] = useState(false);
-    const apiBaseUrl = import.meta.env.VITE_API_URL || '';
+    const apiBaseUrl = '';
 
     const handleGalaxySelect = async (details: GalaxyDetailsInterface | null, isLoading: boolean) => {
         setSelectedGalaxy(details);

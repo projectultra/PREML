@@ -343,8 +343,8 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
                   key={galaxy.id}
                   onClick={() => handleGalaxySelect(galaxy)}
                   className={`w-full p-3 text-left transition-all border mono ${selectedGalaxyId === galaxy.id
-                      ? 'bg-blue-600/10 border-blue-500/50'
-                      : 'bg-slate-900/40 border-slate-800/50 hover:border-slate-700'
+                    ? 'bg-blue-600/10 border-blue-500/50'
+                    : 'bg-slate-900/40 border-slate-800/50 hover:border-slate-700'
                     }`}
                 >
                   <div className="flex items-center justify-between mb-2">
