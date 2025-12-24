@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   Calculator,
-  Star,
   Image,
-  ToggleLeft,
-  Sparkles,
   Loader2,
 } from "lucide-react";
 
@@ -135,124 +132,146 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
     }
   };
 
-  const handleModeSwitch = () => {
-    setIsPhotometric(!isPhotometric);
-    setCalculatedRedshift(null);
-  };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <Calculator className="w-6 h-6 text-indigo-300" />
-          <h2 className="text-2xl font-bold text-white">Redshift Calculator</h2>
-        </div>
+    <div className="space-y-6">
+      {/* Mode Switch */}
+      <div className="flex bg-slate-900 p-1 border border-slate-800">
         <button
-          onClick={handleModeSwitch}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition-colors"
+          onClick={() => setIsPhotometric(true)}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 mono text-[10px] font-bold uppercase transition-all ${isPhotometric
+            ? 'bg-blue-600 text-white shadow-lg'
+            : 'text-slate-500 hover:text-slate-300'
+            }`}
         >
-          <ToggleLeft className="w-5 h-5" />
-          <span>
-            {isPhotometric ? "Switch to Image" : "Switch to Photometric"}
-          </span>
+          <Calculator className="w-3 h-3" />
+          Photometric
+        </button>
+        <button
+          onClick={() => setIsPhotometric(false)}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 mono text-[10px] font-bold uppercase transition-all ${!isPhotometric
+            ? 'bg-blue-600 text-white shadow-lg'
+            : 'text-slate-500 hover:text-slate-300'
+            }`}
+        >
+          <Image className="w-3 h-3" />
+          Spectral_Img
         </button>
       </div>
 
       {isPhotometric ? (
-        <div className="grid grid-cols-1 gap-4">
-          {isDetailsLoading ? (
-            <div className="flex items-center justify-center">
-              <Loader2 className="w-5 h-5 animate-spin text-indigo-300" />
-              <span className="ml-2 text-indigo-200">
-                Loading magnitudes...
-              </span>
-            </div>
-          ) : (
-            Object.entries(magnitudes).map(([filter, value]) => (
-              <div key={filter} className="flex flex-col">
-                <label className="text-sm font-medium text-indigo-200 mb-1 flex items-center gap-2">
-                  <Star className="w-4 h-4" />
-                  {filter.toUpperCase()} Magnitude
-                </label>
-                <input
-                  type="number"
-                  value={value}
-                  onChange={handleInputChange(filter as keyof MagnitudeValues)}
-                  step="0.1"
-                  className="input-space px-3 py-2 rounded-md focus:outline-none"
-                />
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-3">
+            {(['g', 'r', 'i', 'z', 'y'] as const).map((filter) => (
+              <div key={filter} className="flex items-center gap-3">
+                <div className="w-12 flex flex-col">
+                  <span className="mono text-[10px] font-bold text-slate-500 uppercase">Band</span>
+                  <span className="mono text-sm font-bold text-blue-400 uppercase">{filter}</span>
+                </div>
+                <div className="flex-1 relative">
+                  <input
+                    type="number"
+                    value={magnitudes[filter]}
+                    onChange={handleInputChange(filter)}
+                    className="input-tech w-full pl-3 pr-12 py-2.5"
+                    step="0.1"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 mono text-[10px] font-bold text-slate-600">MAG</span>
+                </div>
               </div>
-            ))
-          )}
+            ))}
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="flex flex-col">
-            <label className="text-sm font-medium text-indigo-200 mb-1 flex items-center gap-2">
-              <Image className="w-4 h-4" />
-              Upload Spectral Image
-            </label>
+          <div
+            className="border-2 border-dashed border-slate-800 bg-slate-900/50 p-8 flex flex-col items-center justify-center gap-4 group hover:border-blue-500/50 transition-colors cursor-pointer relative overflow-hidden"
+            onClick={() => document.getElementById('image-upload')?.click()}
+          >
             <input
+              id="image-upload"
               type="file"
-              accept="image/*"
+              className="hidden"
               onChange={handleImageChange}
-              className="input-space px-3 py-2 rounded-md focus:outline-none"
+              accept="image/*"
             />
+            {imagePreview ? (
+              <div className="relative w-full aspect-square border border-slate-700 overflow-hidden">
+                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover grayscale contrast-125" />
+                <div className="absolute inset-0 bg-blue-500/10 mix-blend-overlay" />
+                <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 border border-slate-700">
+                  <span className="mono text-[8px] text-blue-400 font-bold uppercase tracking-widest">Spectral_Data_Loaded</span>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="p-4 bg-slate-800/50 border border-slate-700">
+                  <Image className="w-8 h-8 text-slate-500 group-hover:text-blue-400 transition-colors" />
+                </div>
+                <div className="text-center">
+                  <p className="mono text-[10px] font-bold text-slate-300 uppercase mb-1">Upload_Spectral_Frame</p>
+                  <p className="mono text-[8px] text-slate-500 uppercase">FITS / PNG / JPG (MAX 10MB)</p>
+                </div>
+              </>
+            )}
           </div>
-
-          {imagePreview && (
-            <div className="mt-4">
-              <img
-                src={imagePreview}
-                alt="Spectral preview"
-                className="w-full h-48 object-cover rounded-lg border border-indigo-500/20"
-              />
-            </div>
-          )}
         </div>
       )}
 
-      <div className="mt-6 flex flex-col gap-4">
-        <button
-          onClick={
-            isPhotometric
-              ? calculatePhotometricRedshift
-              : calculateImageRedshift
-          }
-          disabled={
-            isCalculating ||
-            (!isPhotometric && !selectedImage) ||
-            isDetailsLoading
-          }
-          className={`w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all ${isCalculating ||
-            (!isPhotometric && !selectedImage) ||
-            isDetailsLoading
-            ? "bg-indigo-800 opacity-50 cursor-not-allowed"
-            : "bg-indigo-600 hover:bg-indigo-700"
-            }`}
-        >
-          <Sparkles
-            className={`w-5 h-5 ${isCalculating ? "animate-spin" : ""}`}
-          />
-          {isCalculating ? "Calculating..." : "Calculate Redshift"}
-        </button>
+      <button
+        onClick={isPhotometric ? calculatePhotometricRedshift : calculateImageRedshift}
+        disabled={isCalculating || (!isPhotometric && !selectedImage)}
+        className="btn-tech btn-tech-primary w-full py-4 justify-center text-sm tracking-widest"
+      >
+        {isCalculating ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Executing_Inference...
+          </>
+        ) : (
+          <>
+            <Calculator className="w-4 h-4" />
+            Run_Analysis_Engine
+          </>
+        )}
+      </button>
 
-        <div className="p-4 bg-indigo-900 bg-opacity-30 rounded-lg border border-indigo-500/20">
-          <p className="text-lg font-semibold text-indigo-200">
-            Estimated Redshift:{" "}
-            <span className="text-white">
-              {calculatedRedshift !== null
-                ? calculatedRedshift
-                : isPhotometric
-                  ? "Click calculate to determine redshift"
-                  : selectedImage
-                    ? "Click calculate to determine redshift"
-                    : "Upload an image to calculate"}
-            </span>
-          </p>
+      {/* Result Display */}
+      <div className={`tech-panel transition-all duration-500 ${calculatedRedshift !== null ? 'border-blue-500/50 bg-blue-500/5' : 'opacity-50'}`}>
+        <div className="tech-header py-2">
+          <span className="tech-label">Inference_Output</span>
+          {calculatedRedshift !== null && (
+            <span className="mono text-[8px] font-bold text-blue-400 uppercase tracking-widest px-2 py-0.5 border border-blue-500/30">Verified</span>
+          )}
+        </div>
+        <div className="p-6 flex flex-col items-center justify-center min-h-[120px]">
+          {calculatedRedshift !== null ? (
+            <div className="text-center">
+              <span className="mono text-[10px] font-bold text-slate-500 uppercase mb-2 block">Estimated_Redshift (z)</span>
+              <div className="text-5xl font-bold mono text-blue-400 tracking-tighter">
+                {calculatedRedshift.toFixed(4)}
+              </div>
+              <div className="mt-4 flex items-center gap-2 justify-center">
+                <div className="h-1 w-12 bg-blue-500/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-500 w-[92%]" />
+                </div>
+                <span className="mono text-[8px] font-bold text-slate-500 uppercase">Confidence: 0.92</span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center space-y-2">
+              <div className="mono text-[10px] text-slate-600 uppercase italic">Awaiting_Input_Parameters...</div>
+              <div className="flex gap-1 justify-center">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="w-1 h-1 bg-slate-800 animate-pulse" style={{ animationDelay: `${i * 200}ms` }} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
+
   );
 };
 

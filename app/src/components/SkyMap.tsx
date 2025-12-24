@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Star } from 'lucide-react';
 import { initializeIframeCommunication } from '../utils/hscmapComms';
 
 interface SkyMapProps {
@@ -250,120 +250,132 @@ const SkyMap: React.FC<SkyMapProps> = ({ width, height, onGalaxySelect }) => {
   }
 
   return (
-    <div className="flex w-full h-full">
-      {/* Iframe Map */}
-      <div className="relative" style={{ width: `${width}px`, height: `${height}px` }}>
+    <div className="flex flex-col lg:flex-row w-full gap-6">
+      {/* Iframe Map Container */}
+      <div className="relative flex-1 tech-panel overflow-hidden">
         <iframe
           ref={iframeRef}
           title="HSC Map"
           src={iframeUrl}
-          width={width}
+          width="100%"
           height={height}
-          className="rounded-lg shadow-lg border border-indigo-500/20"
-          style={{ backgroundColor: '#000' }}
+          className="w-full grayscale contrast-125"
+          style={{ backgroundColor: '#000', minHeight: `${height}px` }}
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
         />
-        {/* Red circle in the center */}
-        <div
-          className="absolute rounded-full border-2 border-red-500"
-          style={{
-            width: '10px',
-            height: '10px',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            pointerEvents: 'none',
-          }}
-        />
+
+        {/* Center Crosshair */}
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+          <div className="relative w-12 h-12">
+            <div className="absolute top-1/2 left-0 w-full h-[1px] bg-blue-500/40" />
+            <div className="absolute top-0 left-1/2 w-[1px] h-full bg-blue-500/40" />
+            <div className="absolute inset-0 border border-blue-500/20 rounded-full" />
+            <div className="absolute inset-[45%] bg-blue-500 rounded-full shadow-[0_0_8px_var(--accent-blue)]" />
+          </div>
+        </div>
+
+        {/* Overlays */}
         {selection && (
-          <div className="absolute top-4 left-4 bg-gray-800 text-white px-4 py-2 rounded opacity-90">
-            {selection}
+          <div className="absolute top-4 left-4 z-20">
+            <div className="px-3 py-1.5 bg-slate-950/90 border border-slate-800 text-[10px] font-bold mono text-blue-400 uppercase tracking-widest">
+              <span className="text-slate-600 mr-2">Selection:</span>
+              {selection}
+            </div>
           </div>
         )}
+
         {error && (
-          <div className="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded opacity-90">
-            Error: {error}
+          <div className="absolute top-4 right-4 z-20">
+            <div className="px-3 py-1.5 bg-red-950/90 border border-red-500/50 text-[10px] font-bold mono text-red-400 uppercase tracking-widest">
+              Error: {error}
+            </div>
           </div>
         )}
       </div>
-      {/* Sidebar with Input, Button, and Galaxy List */}
-      <div className="ml-4 flex flex-col space-y-4 w-80">
-        {/* Input and Button */}
-        <div>
-          <label htmlFor="raDecInput" className="block text-white mb-1">
-            Enter RA and Dec (e.g., α=75.194502° δ=-33.193044°)
-          </label>
-          <input
-            id="raDecInput"
-            type="text"
-            value={raDecInput}
-            onChange={(e) => setRaDecInput(e.target.value)}
-            placeholder="α=75.194502° δ=-33.193044°"
-            className="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-indigo-500"
+
+      {/* Sidebar Controls */}
+      <div className="w-full lg:w-80 flex flex-col gap-6">
+        {/* Search Section */}
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <span className="tech-label">Coordinate_Input</span>
+            <input
+              id="raDecInput"
+              type="text"
+              value={raDecInput}
+              onChange={(e) => setRaDecInput(e.target.value)}
+              placeholder="α=75.1945° δ=-33.1930°"
+              className="input-tech w-full"
+              disabled={isLoading}
+            />
+          </div>
+
+          <button
+            onClick={handleSearchGalaxies}
             disabled={isLoading}
-          />
-        </div>
-        <button
-          onClick={handleSearchGalaxies}
-          className={`flex items-center justify-center px-4 py-2 rounded text-white ${isLoading ? 'bg-indigo-800 opacity-50 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
-            }`}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              Loading...
-            </>
-          ) : (
-            'Search Nearby Galaxies'
-          )}
-        </button>
-        {/* Collapsible Galaxy List */}
-        <div className="bg-gray-800 text-white p-4 rounded-lg shadow-lg">
-          <details className="group">
-            <summary className="flex items-center justify-between cursor-pointer">
-              <h3 className="text-lg font-semibold">
-                Found {nearbyGalaxies.length} object{nearbyGalaxies.length !== 1 ? 's' : ''} nearby
-              </h3>
-              <span className="text-indigo-300 group-open:rotate-180 transition-transform">
-                ▼
-              </span>
-            </summary>
+            className="btn-tech btn-tech-primary w-full py-3 justify-center"
+          >
             {isLoading ? (
-              <div className="mt-2 flex items-center justify-center">
-                <Loader2 className="w-5 h-5 animate-spin text-indigo-300" />
-                <span className="ml-2 text-gray-400">Loading galaxies...</span>
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Star className="w-4 h-4" />
+            )}
+            {isLoading ? 'Scanning...' : 'Execute_Search'}
+          </button>
+        </div>
+
+        {/* Results Section */}
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="tech-header py-2 mb-2">
+            <span className="tech-label">Detected_Objects</span>
+            <span className="mono text-[10px] font-bold text-blue-400">[{nearbyGalaxies.length}]</span>
+          </div>
+
+          <div className="flex-1 overflow-y-auto pr-2 space-y-2 custom-scrollbar">
+            {isLoading ? (
+              <div className="py-12 flex flex-col items-center justify-center space-y-3 bg-slate-900/30 border border-slate-800 border-dashed">
+                <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                <span className="mono text-[10px] font-bold text-slate-600 uppercase">Analyzing_Sector...</span>
               </div>
             ) : nearbyGalaxies.length > 0 ? (
-              <ul className="mt-2 space-y-2 max-h-64 overflow-y-auto">
-                {nearbyGalaxies.map((galaxy) => (
-                  <li
-                    key={galaxy.id}
-                    onClick={() => handleGalaxySelect(galaxy)}
-                    className={`p-2 rounded cursor-pointer ${selectedGalaxyId === galaxy.id
-                      ? 'bg-indigo-600'
-                      : 'bg-gray-700 hover:bg-gray-600'
-                      }`}
-                  >
-                    <div className="text-sm">
-                      <span className="font-medium">ID:</span> {galaxy.id}
+              nearbyGalaxies.map((galaxy) => (
+                <button
+                  key={galaxy.id}
+                  onClick={() => handleGalaxySelect(galaxy)}
+                  className={`w-full p-3 text-left transition-all border mono ${selectedGalaxyId === galaxy.id
+                      ? 'bg-blue-600/10 border-blue-500/50'
+                      : 'bg-slate-900/40 border-slate-800/50 hover:border-slate-700'
+                    }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`text-[10px] font-bold ${selectedGalaxyId === galaxy.id ? 'text-blue-400' : 'text-slate-400'}`}>
+                      ID: {galaxy.id}
+                    </span>
+                    <div className={`w-1.5 h-1.5 rounded-full ${selectedGalaxyId === galaxy.id ? 'bg-blue-500 shadow-[0_0_4px_var(--accent-blue)]' : 'bg-slate-800'}`} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-0.5">
+                      <p className="text-[8px] font-bold text-slate-600 uppercase">RA</p>
+                      <p className="text-[10px] font-bold text-slate-300">{galaxy.ra.toFixed(4)}°</p>
                     </div>
-                    <div className="text-sm">
-                      <span className="font-medium">RA:</span> {galaxy.ra.toFixed(4)}°
+                    <div className="space-y-0.5">
+                      <p className="text-[8px] font-bold text-slate-600 uppercase">DEC</p>
+                      <p className="text-[10px] font-bold text-slate-300">{galaxy.dec.toFixed(4)}°</p>
                     </div>
-                    <div className="text-sm">
-                      <span className="font-medium">Dec:</span> {galaxy.dec.toFixed(4)}°
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                  </div>
+                </button>
+              ))
             ) : (
-              <p className="mt-2 text-gray-400">No galaxies found.</p>
+              <div className="py-12 text-center bg-slate-900/20 border border-slate-800 border-dashed">
+                <p className="mono text-[10px] text-slate-600 uppercase italic">No_Objects_Detected</p>
+              </div>
             )}
-          </details>
+          </div>
         </div>
       </div>
     </div>
+
+
   );
 };
 

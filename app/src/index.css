@@ -1,61 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: linear-gradient(to bottom, #0f172a, #1e293b);
-  color: #e2e8f0;
+:root {
+  --bg-main: #0a0b0d;
+  --bg-panel: #14161a;
+  --bg-input: #1c1e22;
+  --border-primary: #292d33;
+  --border-active: #3d444d;
+  --accent-teal: #10b981;
+  --accent-blue: #3b82f6;
+  --text-primary: #e1e8ed;
+  --text-secondary: #8a9ba8;
+  --text-muted: #5c7080;
 }
 
-.star-field {
-  position: fixed;
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Palantir-style technical borders */
+.tech-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-primary);
+  position: relative;
+}
+
+.tech-panel::before {
+  content: '';
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 2px;
   height: 100%;
+  background: var(--accent-blue);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.tech-panel:hover::before {
+  opacity: 1;
+}
+
+.tech-header {
+  border-bottom: 1px solid var(--border-primary);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tech-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.tech-value {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent-teal);
+}
+
+.input-tech {
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.15s ease;
+}
+
+.input-tech:focus {
+  border-color: var(--accent-blue);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--accent-blue);
+}
+
+.btn-tech {
+  background: var(--border-primary);
+  border: 1px solid var(--border-active);
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-tech:hover:not(:disabled) {
+  background: var(--border-active);
+  border-color: var(--text-muted);
+}
+
+.btn-tech:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-tech-primary {
+  background: var(--accent-blue);
+  border-color: #2563eb;
+}
+
+.btn-tech-primary:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+/* Grid overlay for that technical look */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(var(--border-primary) 1px, transparent 1px);
+  background-size: 40px 40px;
   pointer-events: none;
+  opacity: 0.2;
   z-index: 0;
-  background-image: 
-    radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
-    radial-gradient(1px 1px at 90px 40px, #fff, rgba(0,0,0,0));
-  background-repeat: repeat;
-  animation: twinkle 5s ease-in-out infinite alternate;
 }
 
-@keyframes twinkle {
-  from {
-    background-position: 0 0, 0 0, 0 0;
-  }
-  to {
-    background-position: -50px -25px, -125px -75px, -50px -100px;
-  }
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-.glass-effect {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
 }
 
-.input-space {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  color: #e2e8f0;
-  transition: all 0.3s ease;
+::-webkit-scrollbar-thumb {
+  background: var(--border-primary);
 }
 
-.input-space:focus {
-  border-color: #818cf8;
-  box-shadow: 0 0 15px rgba(129, 140, 248, 0.3);
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-active);
 }
 
-.nebula-glow {
-  position: absolute;
-  width: 300px;
-  height: 300px;
+.status-dot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.15;
-  pointer-events: none;
+  display: inline-block;
+}
+
+.status-online {
+  background: var(--accent-teal);
+  box-shadow: 0 0 8px var(--accent-teal);
 }
