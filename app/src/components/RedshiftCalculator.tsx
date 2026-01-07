@@ -139,7 +139,7 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
       <div className="flex bg-slate-900 p-1 border border-slate-800">
         <button
           onClick={() => setIsPhotometric(true)}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 mono text-[10px] font-bold uppercase transition-all ${isPhotometric
+          className={`flex-1 flex items-center justify-center gap-2 py-2 mono text-xs font-bold uppercase transition-all ${isPhotometric
             ? 'bg-blue-600 text-white shadow-lg'
             : 'text-slate-500 hover:text-slate-300'
             }`}
@@ -149,7 +149,7 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
         </button>
         <button
           onClick={() => setIsPhotometric(false)}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 mono text-[10px] font-bold uppercase transition-all ${!isPhotometric
+          className={`flex-1 flex items-center justify-center gap-2 py-2 mono text-xs font-bold uppercase transition-all ${!isPhotometric
             ? 'bg-blue-600 text-white shadow-lg'
             : 'text-slate-500 hover:text-slate-300'
             }`}
@@ -165,8 +165,8 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
             {(['g', 'r', 'i', 'z', 'y'] as const).map((filter) => (
               <div key={filter} className="flex items-center gap-3">
                 <div className="w-12 flex flex-col">
-                  <span className="mono text-[10px] font-bold text-slate-500 uppercase">Band</span>
-                  <span className="mono text-sm font-bold text-blue-400 uppercase">{filter}</span>
+                  <span className="mono text-xs font-bold text-slate-500 uppercase">Band</span>
+                  <span className="mono text-base font-bold text-blue-400 uppercase">{filter}</span>
                 </div>
                 <div className="flex-1 relative">
                   <input
@@ -176,7 +176,7 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
                     className="input-tech w-full pl-3 pr-12 py-2.5"
                     step="0.1"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 mono text-[10px] font-bold text-slate-600">MAG</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 mono text-xs font-bold text-slate-600">MAG</span>
                 </div>
               </div>
             ))}
@@ -209,8 +209,8 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
                   <Image className="w-8 h-8 text-slate-500 group-hover:text-blue-400 transition-colors" />
                 </div>
                 <div className="text-center">
-                  <p className="mono text-[10px] font-bold text-slate-300 uppercase mb-1">Upload_Spectral_Frame</p>
-                  <p className="mono text-[8px] text-slate-500 uppercase">FITS / PNG / JPG (MAX 10MB)</p>
+                  <p className="mono text-xs font-bold text-slate-300 uppercase mb-1">Upload_Spectral_Frame</p>
+                  <p className="mono text-[10px] text-slate-500 uppercase">FITS / PNG / JPG (MAX 10MB)</p>
                 </div>
               </>
             )}
@@ -247,7 +247,7 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
         <div className="p-6 flex flex-col items-center justify-center min-h-[120px]">
           {calculatedRedshift !== null ? (
             <div className="text-center">
-              <span className="mono text-[10px] font-bold text-slate-500 uppercase mb-2 block">Estimated_Redshift (z)</span>
+              <span className="mono text-xs font-bold text-slate-500 uppercase mb-2 block">Estimated_Redshift (z)</span>
               <div className="text-5xl font-bold mono text-blue-400 tracking-tighter">
                 {calculatedRedshift.toFixed(4)}
               </div>
@@ -255,12 +255,12 @@ const RedshiftCalculator: React.FC<RedshiftCalculatorProps> = ({
                 <div className="h-1 w-12 bg-blue-500/20 rounded-full overflow-hidden">
                   <div className="h-full bg-blue-500 w-[92%]" />
                 </div>
-                <span className="mono text-[8px] font-bold text-slate-500 uppercase">Confidence: 0.92</span>
+                <span className="mono text-[10px] font-bold text-slate-500 uppercase">Confidence: 0.92</span>
               </div>
             </div>
           ) : (
             <div className="text-center space-y-2">
-              <div className="mono text-[10px] text-slate-600 uppercase italic">Awaiting_Input_Parameters...</div>
+              <div className="mono text-xs text-slate-600 uppercase italic">Awaiting_Input_Parameters...</div>
               <div className="flex gap-1 justify-center">
                 {[1, 2, 3].map(i => (
                   <div key={i} className="w-1 h-1 bg-slate-800 animate-pulse" style={{ animationDelay: `${i * 200}ms` }} />

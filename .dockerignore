@@ -13,3 +13,4 @@ App/dist
 .gitignore
 README.md
 docker-compose.yml
+PGNN/

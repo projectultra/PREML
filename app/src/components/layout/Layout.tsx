@@ -18,7 +18,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     ];
 
     return (
-        <div className="min-h-screen relative overflow-hidden selection:bg-blue-500/30">
+        <div className="min-h-screen flex flex-col relative overflow-hidden selection:bg-blue-500/30">
             <div className="grid-overlay" />
 
             {/* Header */}
@@ -44,7 +44,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                                             }`}
                                     >
                                         <Icon className="w-3.5 h-3.5" />
-                                        <span className="mono text-[10px] font-bold uppercase tracking-wider">{item.label}</span>
+                                        <span className="mono text-xs font-bold uppercase tracking-wider">{item.label}</span>
                                     </Link>
                                 );
                             })}
@@ -52,20 +52,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     </div>
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2">
-                            <div className="status-dot status-online" />
-                            <span className="mono text-[10px] text-slate-500 uppercase font-bold">Node_Active</span>
-                        </div>
-                        <div className="h-4 w-px bg-slate-800" />
-                        <div className="flex flex-col items-end">
-                            <span className="mono text-[10px] text-slate-500 uppercase font-bold">Research Center</span>
-                            <span className="mono text-[10px] text-blue-400 font-bold">V-2.4.0-STABLE</span>
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/80" />
+                            <span className="mono text-xs text-slate-500 font-medium uppercase tracking-wider">Online</span>
                         </div>
                     </div>
                 </div>
             </header>
 
             {/* Main Content */}
-            <main className="relative z-10 max-w-[1600px] mx-auto p-6">
+            <main className="flex-1 relative z-10 max-w-[1600px] mx-auto p-6 w-full">
                 {children}
             </main>
 
@@ -73,14 +68,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <footer className="relative z-10 border-t border-slate-800 bg-slate-950/50 px-6 py-4 mt-auto">
                 <div className="max-w-[1600px] mx-auto flex justify-between items-center">
                     <div className="flex items-center gap-4">
-                        <span className="mono text-[10px] text-slate-600">© 2024 PREML_RESEARCH_GROUP</span>
-                        <span className="mono text-[10px] text-slate-600">//</span>
-                        <span className="mono text-[10px] text-slate-600">OPEN_SCIENCE_INITIATIVE</span>
+                        <span className="mono text-xs text-slate-600">© 2024 PREML Project</span>
+                        <span className="mono text-xs text-slate-600">//</span>
+                        <span className="mono text-xs text-slate-600">Final Year Research</span>
                     </div>
                     <div className="flex gap-6">
-                        <a href="#" className="mono text-[10px] text-slate-500 hover:text-blue-400 transition-colors uppercase font-bold">Data_Policy</a>
-                        <a href="#" className="mono text-[10px] text-slate-500 hover:text-blue-400 transition-colors uppercase font-bold">Citation_Guide</a>
-                        <a href="#" className="mono text-[10px] text-slate-500 hover:text-blue-400 transition-colors uppercase font-bold">GitHub</a>
                     </div>
                 </div>
             </footer>

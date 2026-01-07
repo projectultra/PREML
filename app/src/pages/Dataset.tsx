@@ -50,9 +50,9 @@ const Dataset: React.FC = () => {
                     </div>
                 </div>
                 <div className="flex flex-col md:flex-row gap-8 items-start">
-                    <p className="mono text-sm text-slate-400 max-w-3xl leading-relaxed flex-1">
-                        The PREML project utilizes a massive multi-survey dataset combining **HSC-SSP PDR3** and **SDSS DR18**.
-                        While the photometric catalog spans over 5.8 million objects, the core **Multimodal Research Set**
+                    <p className="mono text-base text-slate-400 max-w-3xl leading-relaxed flex-1">
+                        The PREML project utilizes a massive multi-survey dataset combining <span className="font-bold text-slate-200">HSC-SSP PDR3</span> and <span className="font-bold text-slate-200">SDSS DR18</span>.
+                        While the photometric catalog spans over 5.8 million objects, the core <span className="font-bold text-slate-200">Multimodal Research Set</span>
                         integrates high-resolution image cutouts with photometric data for 395,585 galaxies,
                         enabling physics-guided deep learning.
                     </p>
@@ -92,7 +92,7 @@ const Dataset: React.FC = () => {
                             </div>
                         </div>
                         <div className="p-6 overflow-x-auto">
-                            <table className="w-full mono text-[10px]">
+                            <table className="w-full mono text-xs">
                                 <thead>
                                     <tr className="border-b border-slate-800 text-slate-500 text-left uppercase font-bold">
                                         <th className="pb-3 px-4">Archive_Name / File_Path</th>
@@ -142,10 +142,10 @@ const Dataset: React.FC = () => {
                                 <item.icon className="w-4 h-4 text-blue-500 mt-1" />
                                 <div className="flex-1">
                                     <div className="flex justify-between items-center mb-1">
-                                        <span className="mono text-[10px] font-bold text-slate-200 uppercase">{item.label}</span>
-                                        <span className="mono text-[10px] text-blue-400 font-bold">{item.value}</span>
+                                        <span className="mono text-xs font-bold text-slate-200 uppercase">{item.label}</span>
+                                        <span className="mono text-xs text-blue-400 font-bold">{item.value}</span>
                                     </div>
-                                    <p className="mono text-[9px] text-slate-500">{item.desc || item.sub}</p>
+                                    <p className="mono text-[10px] text-slate-500">{item.desc || item.sub}</p>
                                 </div>
                             </div>
                         ))}
@@ -166,7 +166,7 @@ const Dataset: React.FC = () => {
                                 <span className="tech-label text-[9px]">HSC_Bands</span>
                                 <div className="flex flex-wrap gap-2">
                                     {['G', 'R', 'I', 'Z', 'Y'].map(b => (
-                                        <span key={b} className="mono text-[8px] px-2 py-1 bg-blue-900/20 border border-blue-500/30 text-blue-400 font-bold">{b}</span>
+                                        <span key={b} className="mono text-xs px-2 py-1 bg-blue-900/20 border border-blue-500/30 text-blue-400 font-bold">{b}</span>
                                     ))}
                                 </div>
                             </div>
@@ -174,13 +174,13 @@ const Dataset: React.FC = () => {
                                 <span className="tech-label text-[9px]">SDSS_Bands</span>
                                 <div className="flex flex-wrap gap-2">
                                     {['U', 'G', 'R', 'I', 'Z'].map(b => (
-                                        <span key={b} className="mono text-[8px] px-2 py-1 bg-slate-800 border border-slate-700 text-slate-500 font-bold">{b}</span>
+                                        <span key={b} className="mono text-xs px-2 py-1 bg-slate-800 border border-slate-700 text-slate-500 font-bold">{b}</span>
                                     ))}
                                 </div>
                             </div>
                         </div>
                         <div className="pt-4 border-t border-slate-800">
-                            <p className="mono text-[10px] text-slate-500 leading-relaxed">
+                            <p className="mono text-xs text-slate-500 leading-relaxed">
                                 The multimodal subset exclusively utilizes HSC data (grizy), while the photometric
                                 catalog leverages the full spectral range from both surveys (ugriz + grizy).
                             </p>

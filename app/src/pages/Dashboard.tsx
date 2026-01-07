@@ -57,16 +57,16 @@ const Dashboard: React.FC = () => {
                             <span className="tech-label">Spatial_Intelligence_Map</span>
                         </div>
                         <div className="flex gap-4">
-                            <span className="mono text-[10px] text-slate-500 font-bold">SOURCE: GAIA_DR2</span>
-                            <span className="mono text-[10px] text-slate-500 font-bold">LAYER: PANSTARRS</span>
+                            <span className="mono text-xs text-slate-500 font-bold">SOURCE: GAIA_DR2</span>
+                            <span className="mono text-xs text-slate-500 font-bold">LAYER: PANSTARRS</span>
                         </div>
                     </div>
                     <div className="p-4 bg-black/40">
                         <SkyMap width={800} height={550} onGalaxySelect={handleGalaxySelect} />
                     </div>
                     <div className="border-t border-slate-800 p-2 flex justify-between items-center bg-slate-900/20">
-                        <span className="mono text-[10px] text-slate-600">COORDINATE_SYSTEM: J2000</span>
-                        <span className="mono text-[10px] text-slate-600">PROJECTION: EQUIRECTANGULAR</span>
+                        <span className="mono text-xs text-slate-600">COORDINATE_SYSTEM: J2000</span>
+                        <span className="mono text-xs text-slate-600">PROJECTION: EQUIRECTANGULAR</span>
                     </div>
                 </section>
 
@@ -119,7 +119,7 @@ const Dashboard: React.FC = () => {
                             <div className="w-1 h-1 bg-blue-400" />
                             <span className="tech-label text-[9px]">Model_Parameters</span>
                         </div>
-                        <p className="mono text-[10px] text-slate-500 leading-relaxed">
+                        <p className="mono text-xs text-slate-500 leading-relaxed">
                             Deep neural network trained on HSC-SSP PDR3 dataset.
                             Inference latency: &lt; 45ms.
                             Confidence threshold: 0.92.

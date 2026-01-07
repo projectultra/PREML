@@ -27,7 +27,7 @@ const Publications: React.FC = () => {
                         <p className="mono text-xs text-blue-400 font-bold">RECORDS_FOUND: {publications.length} // LAST_UPDATE: 2025-12-24</p>
                     </div>
                 </div>
-                <p className="mono text-sm text-slate-400 max-w-3xl leading-relaxed">
+                <p className="mono text-base text-slate-400 max-w-3xl leading-relaxed">
                     The primary research output of the PREML project, focusing on the integration of
                     physical models with deep learning for astronomical applications.
                 </p>
@@ -43,7 +43,7 @@ const Publications: React.FC = () => {
                             </div>
                             <div className="flex items-center gap-2">
                                 <Calendar className="w-3 h-3 text-slate-600" />
-                                <span className="mono text-[10px] text-slate-500 font-bold uppercase">{pub.date}</span>
+                                <span className="mono text-xs text-slate-500 font-bold uppercase">{pub.date}</span>
                             </div>
                         </div>
                         <div className="p-6">
@@ -55,12 +55,12 @@ const Publications: React.FC = () => {
                                     <p className="mono text-xs text-slate-400 font-bold uppercase tracking-wider">
                                         {pub.authors}
                                     </p>
-                                    <p className="mono text-[10px] text-slate-500 italic">
+                                    <p className="mono text-xs text-slate-500 italic">
                                         {pub.journal}
                                     </p>
                                     <div className="flex gap-2 pt-2">
                                         {pub.tags.map((tag, i) => (
-                                            <span key={i} className="mono text-[8px] px-2 py-0.5 bg-slate-900 border border-slate-800 text-slate-500 uppercase font-bold">
+                                            <span key={i} className="mono text-xs px-2 py-0.5 bg-slate-900 border border-slate-800 text-slate-500 uppercase font-bold">
                                                 {tag}
                                             </span>
                                         ))}
@@ -100,7 +100,7 @@ const Publications: React.FC = () => {
                     </div>
                     <div className="space-y-2">
                         <h3 className="mono text-sm font-bold text-slate-200 uppercase">Citing_PREML</h3>
-                        <p className="mono text-[10px] text-slate-500 leading-relaxed">
+                        <p className="mono text-xs text-slate-500 leading-relaxed">
                             If you use our models or the PREML dataset in your research, please cite our ArXiv preprint
                             (Ferrao et al. 2025) and acknowledge the HSC-SSP data release.
                         </p>

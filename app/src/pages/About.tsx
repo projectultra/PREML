@@ -11,13 +11,13 @@ const About: React.FC = () => {
                         <Info className="w-8 h-8 text-blue-400" />
                     </div>
                     <div>
-                        <h1 className="mono text-3xl font-bold text-slate-100 tracking-tighter uppercase">About_The_PREML_Project</h1>
-                        <p className="mono text-xs text-blue-400 font-bold">PROJECT_CODE: PREML-PGNN // STATUS: ACTIVE_RESEARCH</p>
+                        <h1 className="text-3xl font-bold text-slate-100 tracking-tight">About the PREML Project</h1>
+                        <p className="mono text-xs text-slate-500 font-medium">Final Year Research Initiative // Status: Active</p>
                     </div>
                 </div>
-                <p className="mono text-sm text-slate-400 max-w-3xl leading-relaxed">
-                    The PREML (Photometric Redshift Estimation with Machine Learning) project is a collaborative research
-                    initiative focused on pioneering **Physics-Guided Deep Learning** for observational cosmology.
+                <p className="mono text-base text-slate-400 max-w-3xl leading-relaxed">
+                    The PREML (Photometric Redshift Estimation with Machine Learning) project is a final year research
+                    project focused on pioneering <span className="font-bold text-slate-200">Physics-Guided Deep Learning</span> for observational cosmology.
                     By bridging the gap between traditional template-fitting methods and modern neural architectures,
                     we provide robust, interpretable, and scalable tools for next-generation astronomical surveys.
                 </p>
@@ -45,7 +45,7 @@ const About: React.FC = () => {
                                         <div className="w-1 h-3 bg-blue-500" />
                                         <span className="mono text-xs font-bold text-slate-200 uppercase">{item.title}</span>
                                     </div>
-                                    <p className="mono text-[10px] text-slate-500 leading-relaxed">{item.desc}</p>
+                                    <p className="mono text-xs text-slate-500 leading-relaxed">{item.desc}</p>
                                 </div>
                             ))}
                         </div>
@@ -59,8 +59,8 @@ const About: React.FC = () => {
                             </div>
                         </div>
                         <div className="p-6">
-                            <p className="mono text-[11px] text-slate-400 leading-relaxed mb-4">
-                                Our primary contribution is the **Physics-Guided Neural Network (PGNN)**, which embeds Spectral
+                            <p className="mono text-xs text-slate-400 leading-relaxed mb-4">
+                                Our primary contribution is the <span className="font-bold text-slate-200">Physics-Guided Neural Network (PGNN)</span>, which embeds Spectral
                                 Energy Distribution (SED) templates directly into the training loop. This ensures that the
                                 model's predictions remain consistent with established astrophysical laws while benefiting
                                 from the pattern recognition capabilities of deep learning.
@@ -93,25 +93,25 @@ const About: React.FC = () => {
                                 <div className="flex items-start gap-4">
                                     <GraduationCap className="w-5 h-5 text-blue-400 mt-1" />
                                     <div>
-                                        <h4 className="mono text-[10px] font-bold text-slate-200 uppercase">Don Bosco College of Engineering</h4>
-                                        <p className="mono text-[9px] text-slate-500 uppercase">Department of Computer Engineering</p>
-                                        <p className="mono text-[9px] text-slate-500 uppercase mt-1">Fatorda, Goa, India</p>
+                                        <h4 className="mono text-xs font-bold text-slate-200 uppercase">Don Bosco College of Engineering</h4>
+                                        <p className="mono text-[10px] text-slate-500 uppercase">Department of Computer Engineering</p>
+                                        <p className="mono text-[10px] text-slate-500 uppercase mt-1">Fatorda, Goa, India</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="pt-6 border-t border-slate-800 space-y-4">
-                                <div className="flex items-center gap-4 p-3 bg-slate-900/50 border border-slate-800">
-                                    <Mail className="w-4 h-4 text-blue-400" />
-                                    <div className="mono text-[10px] text-slate-300">research@preml-project.org</div>
-                                </div>
-                                <div className="flex items-center gap-4 p-3 bg-slate-900/50 border border-slate-800">
-                                    <Github className="w-4 h-4 text-blue-400" />
-                                    <div className="mono text-[10px] text-slate-300">github.com/preml-research</div>
-                                </div>
+                                <a href="mailto:jonasferrao21@gmail.com" className="flex items-center gap-4 p-3 bg-slate-900/50 border border-slate-800 hover:border-blue-500/30 transition-colors group">
+                                    <Mail className="w-4 h-4 text-blue-400 group-hover:text-blue-300" />
+                                    <div className="mono text-xs text-slate-300 group-hover:text-blue-400">jonasferrao21@gmail.com</div>
+                                </a>
+                                <a href="https://github.com/projectultra/PREML" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-3 bg-slate-900/50 border border-slate-800 hover:border-blue-500/30 transition-colors group">
+                                    <Github className="w-4 h-4 text-blue-400 group-hover:text-blue-300" />
+                                    <div className="mono text-xs text-slate-300 group-hover:text-blue-400">github.com/projectultra/PREML</div>
+                                </a>
                                 <div className="flex items-center gap-4 p-3 bg-slate-900/50 border border-slate-800">
                                     <MapPin className="w-4 h-4 text-blue-400" />
-                                    <div className="mono text-[10px] text-slate-300">Goa, India</div>
+                                    <div className="mono text-xs text-slate-300">Goa, India</div>
                                 </div>
                             </div>
                         </div>
@@ -130,22 +130,24 @@ const About: React.FC = () => {
                 <div className="p-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
-                            { name: 'Jonas Chris Ferrao', role: 'Lead Researcher', focus: 'Physics-Guided ML' },
-                            { name: 'Dickson Dias', role: 'Researcher', focus: 'Deep Learning' },
-                            { name: 'Pranav Naik', role: 'Researcher', focus: 'Data Science' },
-                            { name: 'Glory D\'Cruz', role: 'Researcher', focus: 'Neural Networks' },
-                            { name: 'Anish Naik', role: 'Researcher', focus: 'Astrophysics' },
-                            { name: 'Siya Khandeparkar', role: 'Researcher', focus: 'Data Analysis' },
-                            { name: 'Manisha G. Fal Dessai', role: 'Principal Investigator', focus: 'Computational Physics' },
+                            { name: 'Jonas Chris Ferrao', role: 'Lead Researcher', focus: 'Deep Learning' },
+                            { name: 'Dickson Dias', role: 'Researcher', focus: 'Data Science' },
+                            { name: 'Pranav Naik', role: 'Researcher', focus: 'Astrophysics' },
+                            { name: 'Glory D\'Cruz', role: 'Researcher' },
+                            { name: 'Anish Naik', role: 'Researcher' },
+                            { name: 'Siya Khandeparkar', role: 'Project Guide' },
+                            { name: 'Manisha G. Fal Dessai', role: 'Project Guide' },
                         ].map((member, idx) => (
                             <div key={idx} className="p-4 bg-slate-900/50 border border-slate-800 group hover:border-blue-500/30 transition-all">
                                 <div className="w-10 h-10 bg-slate-800 border border-slate-700 mb-3 flex items-center justify-center mono text-[10px] text-slate-600">
                                     IMG
                                 </div>
-                                <h3 className="mono text-xs font-bold text-slate-200 uppercase">{member.name}</h3>
-                                <p className="mono text-[9px] text-blue-400 font-bold uppercase mb-2">{member.role}</p>
+                                <h3 className="mono text-sm font-bold text-slate-200 uppercase">{member.name}</h3>
+                                <p className="mono text-xs text-blue-400 font-bold uppercase mb-2">{member.role}</p>
                                 <div className="h-px w-8 bg-slate-800 mb-2" />
-                                <p className="mono text-[8px] text-slate-500 uppercase font-bold">Focus: {member.focus}</p>
+                                {member.focus && (
+                                    <p className="mono text-[10px] text-slate-500 uppercase font-bold">Focus: {member.focus}</p>
+                                )}
                             </div>
                         ))}
                     </div>
